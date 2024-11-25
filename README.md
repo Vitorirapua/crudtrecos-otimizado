@@ -1,0 +1,2 @@
+# crudtrecos-otimizado-vt
+ otimização
