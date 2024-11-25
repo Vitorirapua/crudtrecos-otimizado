@@ -1,3 +1,6 @@
+from flask import g
+
+
 def get_usuario(mysql, form):
 
     # Pesquisa se os dados existem no banco de dados → usuario
@@ -45,4 +48,69 @@ def save_new_password(mysql, novasenha, id):
     mysql.connection.commit()
     cur.close()
 
+    return True
+
+def update_del_user(mysql):
+        # Configura o status do usuário para 'del' no banco de dados
+    sql = "UPDATE usuario SET u_status = 'del' WHERE u_id = %s"
+    cur = mysql.connection.cursor()
+    cur.execute(sql, (g.usuario['id'],))
+    mysql.connection.commit()
+    cur.close()
+
+    # Configura o status dos itens do usuário para 'del' no banco de dados
+    sql = "UPDATE treco SET t_status = 'del' WHERE t_usuario = %s"
+    cur = mysql.connection.cursor()
+    cur.execute(sql, (g.usuario['id'],))
+    mysql.connection.commit()
+    cur.close()
+    
+def update_perfil_usuario(mysql, form):
+
+        sql = '''
+            UPDATE usuario
+            SET u_nome = %s,
+                u_nascimento = %s,
+                u_email = %s
+            WHERE u_id = %s
+                AND u_senha = SHA1(%s)
+        '''
+        cur = mysql.connection.cursor()
+        cur.execute(sql, (
+            form['nome'],
+            form['nascimento'],
+            form['email'],
+            g.usuario['id'],
+            form['senha1'],
+        ))
+        mysql.connection.commit()
+        cur.close()
+        
+        return True
+    
+def update_senha(mysql, form):
+        sql = "UPDATE usuario SET u_senha = SHA1(%s) WHERE u_id = %s AND u_senha = SHA1(%s)"
+        cur = mysql.connection.cursor()
+        cur.execute(sql, (
+            form['senha2'],
+            g.usuario['id'],
+            form['senha1'],
+        ))
+        mysql.connection.commit()
+        cur.close()
+    
+        return True
+        
+def get_usuario_data(mysql, form):
+    # Recebe dados do usuário
+    sql = '''
+        SELECT * FROM usuario
+        WHERE u_id = %s
+            AND u_status = 'on'    
+    '''
+    cur = mysql.connection.cursor()
+    cur.execute(sql, (g.usuario['id'],))
+    row = cur.fetchone()
+    cur.close()
+    
     return True

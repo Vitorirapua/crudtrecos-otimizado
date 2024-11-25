@@ -1,4 +1,5 @@
 from flask import g, make_response, redirect, url_for
+from functions.db_usuario import update_del_user
 
 
 def mod_apagausuario(mysql):
@@ -9,19 +10,7 @@ def mod_apagausuario(mysql):
     if g.usuario == '':
         return redirect(url_for('login'))
 
-    # Configura o status do usuário para 'del' no banco de dados
-    sql = "UPDATE usuario SET u_status = 'del' WHERE u_id = %s"
-    cur = mysql.connection.cursor()
-    cur.execute(sql, (g.usuario['id'],))
-    mysql.connection.commit()
-    cur.close()
-
-    # Configura o status dos itens do usuário para 'del' no banco de dados
-    sql = "UPDATE treco SET t_status = 'del' WHERE t_usuario = %s"
-    cur = mysql.connection.cursor()
-    cur.execute(sql, (g.usuario['id'],))
-    mysql.connection.commit()
-    cur.close()
+    update_del_user(mysql)
 
     # Página de destino de logout
     resposta = make_response(redirect(url_for('login')))
