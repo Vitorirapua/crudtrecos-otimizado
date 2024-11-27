@@ -101,7 +101,7 @@ def update_senha(mysql, form):
     
         return True
         
-def get_usuario_data(mysql, form):
+def get_usuario_data(mysql):
     # Recebe dados do usuário
     sql = '''
         SELECT * FROM usuario
@@ -113,4 +113,4 @@ def get_usuario_data(mysql, form):
     row = cur.fetchone()
     cur.close()
     
-    return True
+    return row

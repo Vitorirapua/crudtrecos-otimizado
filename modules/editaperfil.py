@@ -1,6 +1,6 @@
 from flask import g, redirect, render_template, request, url_for
 
-from functions.db_usuario import update_perfil_usuario, update_senha
+from functions.db_usuario import get_usuario_data, update_perfil_usuario, update_senha
 
 
 def mod_editaperfil(mysql):
@@ -23,19 +23,10 @@ def mod_editaperfil(mysql):
             update_senha(mysql=mysql)
 
         return redirect(url_for('logout'))
-############
-    # Recebe dados do usuário
-    sql = '''
-        SELECT * FROM usuario
-        WHERE u_id = %s
-            AND u_status = 'on'    
-    '''
-    cur = mysql.connection.cursor()
-    cur.execute(sql, (g.usuario['id'],))
-    row = cur.fetchone()
-    cur.close()
-#############
-    # print('\n\n\n USER:', row, '\n\n\n')
+
+    row = get_usuario_data(mysql=mysql)
+
+    print('\n\n\n USER:', row, '\n\n\n')
 
     pagina = {
         'titulo': 'CRUDTrecos - Erro 404',
